@@ -1,0 +1,19 @@
+shared_files:
+  - .env.local
+
+shared_folders:
+  - var/log
+  - public/uploads
+
+hooks:
+  install_after: |
+    rm -Rf var/ # Get rid of the git var folder
+    exit 0
+
+  sharedsymlink_after: |
+    test -f ../shared/.env.local || echo "APP_ENV=prod" >> ../shared/.env.local # Create default config if it's not there yet
+    mkdir -p -m777 ../shared/var/log # Create shared log folder if it's not there yet
+    mkdir -p -m777 var/cache
+    mkdir -p -m777 var/sessions
+    APP_ENV=prod composer install --no-dev --optimize-autoloader
+    exit 0
